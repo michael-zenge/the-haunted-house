@@ -2,13 +2,19 @@ namespace SpriteKind {
     export const Locked = SpriteKind.create()
     export const Unlocked = SpriteKind.create()
 }
+sprites.onCreated(SpriteKind.Enemy, function (sprite) {
+    if (levelCounter == 1) {
+        sprite.setFlag(SpriteFlag.DestroyOnWall, true)
+        sprite.setVelocity(randint(-80, 80), randint(-15, -30))
+        sprite.ay = 3
+        if (sprite.vx > 0) {
+            sprite.image.flipX()
+        }
+    }
+})
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     if (Annabelle.tileKindAt(TileDirection.Center, myTiles.tile12)) {
         proceedNextLevel()
-    } else {
-        if (Annabelle.vy == 0) {
-            Annabelle.vy = -200
-        }
     }
 })
 // Best practice: Use functions to avoid code duplicates.
@@ -18,9 +24,14 @@ function getGirlFrontImg () {
 function getGirlBackImg () {
     return aGirl[1]
 }
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (Annabelle.vy == 0) {
+        Annabelle.vy = -200
+    }
+})
 scene.onOverlapTile(SpriteKind.Locked, sprites.dungeon.chestClosed, function (sprite, location) {
-    sprite.say("(A) to open.", 500)
-    if (controller.A.isPressed()) {
+    sprite.say("(B) to open.", 500)
+    if (controller.B.isPressed()) {
         music.baDing.play()
         tiles.setTileAt(location, sprites.dungeon.chestOpen)
     }
@@ -63,22 +74,22 @@ function proceedNextLevel () {
             8888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888fcffffffcfff
             888888888fffffffcfffcfccb8888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888ffffffcfffffff
             88888ffffffffffffffffffffcc888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888bfffcfffffffffff
-            888fffffffffffffffffffffffffcb8888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888ffffffffffffffffff
-            88ffffffffffffffffffffffffcfcf888888888888888888888888888888888888888888888888222222222222222888888888888888888888888888888888888888888888888cffffffffffffffffff
-            8fffffffffffffffffffffffffffffc888888888888888888888888888888888888888888822222222222222222222222888888888888888888888888888888888888888888fffffffffffffffffffff
+            888fffffffffffffffffffffffffcb8888888888888888888888888888888888888888888888888882888282288888888888888888888888888888888888888888888888888888ffffffffffffffffff
+            88ffffffffffffffffffffffffcfcf888888888888888888888888888888888888888888888888222222222222822888888888888888888888888888888888888888888888888cffffffffffffffffff
+            8fffffffffffffffffffffffffffffc888888888888888888888888888888888888888888828222222222222222222282888888888888888888888888888888888888888888fffffffffffffffffffff
             fffffffffffffffffffffffffffffffffc8888888888888888888888888888888888888822222222222222222222222222288888888888888888888888888888888888888fffffffffffffffffffffff
             fffffffffffffffffffffffffffffffcff88888888888888888888888888888888888822222222222242222242222224222228888888888888888888888888888888888fffffffffffffffffffffffff
-            fffffffffffffffffffffffffffffffffcffcccffcb888888888888888888888888822222222244244444424444422242222222888888888888888888888888888888fffffffffffffffffffffffffff
-            fffffffffffffffffffffffffffffffffcfffffffffcff8888888888888888888882222222444444444444444444444222222222888888888888888888888888888fffffffffffffffffffffffffffff
-            fffffffffffffffffffffffffffffffffffffffffffffffffc888888888888888822222244444444444444444444444442bccccc2ccccffffcbfffcffffc88888fffffffffffffffffffffffffffffff
-            ffffffffffffffffffffffffffffffffffffffffffffffffffffff88888888882222224424444444444444444444bcccc2ccccbcccccfffffffffffffffff888ffffffffffffffffffffffffffffffff
-            ffffffffffffffffffffffffffffffffffcffffffffffffffffffcffff88888222222444444444444444544444fcccbfffccccccfcccffffffffffffffffffffffffffffffffffffffffffffffffffff
+            fffffffffffffffffffffffffffffffffcffcccffcb888888888888888888888888822222222244244444424444422242222822888888888888888888888888888888fffffffffffffffffffffffffff
+            fffffffffffffffffffffffffffffffffcfffffffffcff8888888888888888888882822222444444444444444444444222222222888888888888888888888888888fffffffffffffffffffffffffffff
+            fffffffffffffffffffffffffffffffffffffffffffffffffc888888888888888822222244444444444444444444444442bcfccc2ccccffffcbfffcffffc88888fffffffffffffffffffffffffffffff
+            ffffffffffffffffffffffffffffffffffffffffffffffffffffff88888888882222224424444444444444444444bcccc2ccccbccccffffffffffffffffff888ffffffffffffffffffffffffffffffff
+            ffffffffffffffffffffffffffffffffffcffffffffffffffffffcffff88888282222444444444444444544444fcccbfffccfcccfcccffffffffffffffffffffffffffffffffffffffffffffffffffff
             ffffffffffffffffffffffffffffffffffffffffffffffffffffcfffcccb882222224444444445554555555555cfcccffcffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
             fffffffffffffffffffffffffffffffffffffffffffffffffffffffffcccc2bccc22cc4444455555555555cbcf5ffcffffffffffffcffffffffffffffffffffcffffffffffffffffffffffffffffffff
-            fffffffffffffffffffffffffffffffffffffffffffffffffffffffffcccffcbcfffffccb55cc55555555cbccfffffcffffffcffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-            ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffcfcccfcfffbccfffccb5555cffcccfcfffffffcfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-            ffffffffffffffffffffffffffffffffffffcfffffffffffffffffffffcfffffffffcfcccfffcbcc55cfffffffffcfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-            ffffffffffffffffffffffffffffffffffffffffcfffffffffffffffffffffffffffffffffcfcccffbfffcfcffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+            ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffccffcbcfffffccb55cc55555555cbccfffffcffffffcffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+            ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffcffccfcfffbccfffccb5555cffccffcfffffffcfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+            ffffffffffffffffffffffffffffffffffffcfffffffffffffffffffffcfffffffffcfccffffcbcc55cfffffffffcfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+            ffffffffffffffffffffffffffffffffffffffffcfffffffffffffffffffffffffffffffffcffccffbfffcfcffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
             ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffbfffffffffffffffffffffffffffffffffffffffcfffffffffffffffffffffffffffffffffff
             fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffcfffffbffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
             fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffcfffffffffffffffffcffffffcffffcffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
@@ -152,7 +163,7 @@ function proceedNextLevel () {
             ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
             ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
             `)
-        tiles.setTilemap(tiles.createTilemap(hex`18000700000000000000060000000000000000000000000500000005000005000000000000000605000000000000000000000000000000000000000000000000000000000002000200020000000000000000000000000000000000000002070207020000000000000000000000000000000000000002020202020000000004040000000300000400030004000002020802020004010101010101010101010101010101010101010101010101`, img`
+        tiles.setTilemap(tiles.createTilemap(hex`18000700000000000000060000000000000000000000050000000005000005000000000000000605000000000000000000000000000000000000000000000000000000000002000200020000000000000000000000000000000000000002070207020000000000000000000000000000000000000002020202020000000004040000000300000400030004000002020802020004010101010101010101010101010101010101010101010101`, img`
             . . . . . . . . . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . . . . . . . . . 
@@ -314,28 +325,34 @@ function getGirlLeftImg () {
     return aGirl[2]
 }
 scene.onOverlapTile(SpriteKind.Locked, sprites.dungeon.chestOpen, function (sprite, location) {
-    sprite.say("I found a key!", 500)
+    sprite.say("I found a key!", 1000)
     sprite.setKind(SpriteKind.Unlocked)
 })
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     Annabelle.setImage(getGirlLeftImg())
     Annabelle.image.flipX()
 })
-controller.A.onEvent(ControllerButtonEvent.Released, function () {
+scene.onOverlapTile(SpriteKind.Unlocked, myTiles.tile10, function (sprite, location) {
+    sprite.say("(B) to open.", 500)
+    if (controller.B.isPressed()) {
+        music.magicWand.play()
+        tiles.setTileAt(location, myTiles.tile12)
+    }
+})
+controller.B.onEvent(ControllerButtonEvent.Released, function () {
     if (Annabelle.tileKindAt(TileDirection.Center, myTiles.tile12)) {
         Annabelle.setImage(getGirlBackImg())
     }
 })
-scene.onOverlapTile(SpriteKind.Unlocked, myTiles.tile10, function (sprite, location) {
-    sprite.say("(A) to unlock.", 500)
-    if (controller.A.isPressed()) {
-        music.magicWand.play()
-        tiles.setTileAt(location, myTiles.tile12)
+sprites.onDestroyed(SpriteKind.Enemy, function (sprite) {
+    if (sprite.vx > 0) {
+        sprite.image.flipX()
     }
 })
 scene.onOverlapTile(SpriteKind.Locked, myTiles.tile10, function (sprite, location) {
     sprite.say("Locked!", 500)
 })
+let Ghost: Sprite = null
 let Annabelle: Sprite = null
 let aGirl: Image[] = []
 let levelCounter = 0
@@ -393,9 +410,67 @@ aGirl = [img`
     . . . . f f 3 3 f f . . . . . . 
     . . . . . . f f f . . . . . . . 
     `]
+let aGhost = [img`
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . 1 1 1 1 1 . . . . . . . . . 
+    . 1 1 1 1 1 1 1 1 . . . . . . . 
+    . 1 1 f f 1 . f 1 . . . . . . . 
+    . 1 1 f . 1 f f 1 . . . . . . . 
+    . 1 1 1 1 1 1 1 1 1 . . . . . . 
+    . 1 1 1 f 1 1 1 1 1 . . . . . . 
+    . . 1 1 1 1 1 1 1 1 . . . . . . 
+    . . 1 1 1 1 1 1 . 1 1 1 . . . . 
+    . . . 1 1 1 1 . 1 1 1 1 1 1 . . 
+    . . . . . 1 1 1 1 1 1 1 . 1 1 . 
+    . . . . . 1 1 1 1 1 1 1 1 1 . . 
+    . . . . . . 1 1 1 1 1 1 . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    `, img`
+    . . . . . . . . . . . . . . . . 
+    . . . . . . 1 1 1 1 1 . . . . . 
+    . . . . 1 1 1 1 1 1 1 1 1 . . . 
+    . . . 1 1 1 1 1 1 1 1 1 . 1 . . 
+    . . . 1 1 f 1 1 1 1 f 1 1 1 . . 
+    . . . 1 1 . f 1 1 1 . f 1 1 . . 
+    . . . 1 1 1 1 1 1 1 1 1 1 1 . . 
+    . . . 1 1 1 1 1 . 1 1 1 1 1 . . 
+    . . . 1 1 1 1 1 1 1 1 1 1 1 . . 
+    . . . 1 1 1 1 1 1 1 1 1 1 1 . . 
+    . . . 1 1 1 1 1 f 1 1 1 1 1 . . 
+    . . . 1 1 1 1 f 1 f 1 1 1 1 . . 
+    . . . 1 1 1 1 1 1 1 1 1 1 1 . . 
+    . . . 1 1 1 1 1 1 1 1 1 1 1 . . 
+    . . . . 1 1 1 . . . 1 1 1 . . . 
+    . . . . . . . . . . . . . . . . 
+    `, img`
+    . . . . . . . . . . . . . . . . 
+    . . 1 1 1 1 1 . . . . 1 1 1 1 . 
+    . 1 1 1 1 . 1 1 1 1 1 1 1 1 1 1 
+    . 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+    . 1 . 1 1 f . 1 1 f . 1 1 1 . 1 
+    . 1 1 1 1 f f 1 1 f f 1 1 1 1 1 
+    . . . 1 1 1 1 1 1 1 1 1 1 1 . . 
+    . . . 1 1 1 1 1 1 1 1 . 1 1 . . 
+    . . . 1 1 1 1 1 1 1 1 1 1 1 . . 
+    . . . 1 1 1 . 1 1 1 . 1 1 1 . . 
+    . . . 1 1 1 1 . . . 1 1 1 1 . . 
+    . . . 1 1 1 1 1 1 1 1 1 1 1 . . 
+    . . . 1 1 1 1 1 1 1 1 1 . 1 . . 
+    . . . 1 1 . 1 1 1 1 1 1 1 1 . . 
+    . . . . 1 1 1 . . . 1 1 1 . . . 
+    . . . . . . . . . . . . . . . . 
+    `]
 Annabelle = sprites.create(getGirlFrontImg(), SpriteKind.Unlocked)
 controller.moveSprite(Annabelle, 100, 0)
 scene.cameraFollowSprite(Annabelle)
 Annabelle.vy = -80
 Annabelle.ay = 800
 proceedNextLevel()
+game.onUpdateInterval(3000, function () {
+    if (levelCounter == 1) {
+        Ghost = sprites.create(aGhost[randint(0, aGhost.length - 1)], SpriteKind.Enemy)
+        tiles.placeOnRandomTile(Ghost, sprites.dungeon.doorClosedNorth)
+    }
+})
