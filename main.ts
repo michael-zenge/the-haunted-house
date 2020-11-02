@@ -18,6 +18,12 @@ function getGirlFrontImg () {
 function getGirlBackImg () {
     return aGirl[1]
 }
+scene.onOverlapTile(SpriteKind.Locked, sprites.dungeon.chestClosed, function (sprite, location) {
+    sprite.say("(A) to open.", 500)
+    if (controller.A.isPressed()) {
+        tiles.setTileAt(location, sprites.dungeon.chestOpen)
+    }
+})
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     Annabelle.setImage(getGirlLeftImg())
 })
@@ -53,7 +59,7 @@ controller.A.onEvent(ControllerButtonEvent.Released, function () {
     }
 })
 scene.onOverlapTile(SpriteKind.Unlocked, myTiles.tile10, function (sprite, location) {
-    sprite.say("(A) unlock.", 500)
+    sprite.say("(A) to unlock.", 500)
     if (controller.A.isPressed()) {
         tiles.setTileAt(location, myTiles.tile12)
     }
