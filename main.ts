@@ -6,13 +6,16 @@ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     if (Annabelle.tileKindAt(TileDirection.Center, myTiles.tile12)) {
         game.over(true, effects.hearts)
     } else {
-        Annabelle.vy = -200
+        if (Annabelle.vy == 0) {
+            Annabelle.vy = -200
+        }
     }
 })
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     Annabelle.setImage(aPrincess[2])
 })
 controller.right.onEvent(ControllerButtonEvent.Released, function () {
+    Annabelle.image.flipX()
     Annabelle.setImage(aPrincess[0])
 })
 controller.left.onEvent(ControllerButtonEvent.Released, function () {
@@ -23,7 +26,8 @@ scene.onOverlapTile(SpriteKind.Locked, sprites.dungeon.chestOpen, function (spri
     sprite.setKind(SpriteKind.Unlocked)
 })
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
-    Annabelle.setImage(aPrincess[3])
+    Annabelle.setImage(aPrincess[2])
+    Annabelle.image.flipX()
 })
 scene.onOverlapTile(SpriteKind.Unlocked, myTiles.tile10, function (sprite, location) {
     sprite.say("(A) unlock.", 500)
@@ -90,25 +94,7 @@ aPrincess = [img`
     . . . . f 3 5 3 f d f . . . . . 
     . . . . f f 3 3 f f . . . . . . 
     . . . . . . f f f . . . . . . . 
-    `, img`
-    . . . . . . 5 . 5 . . . . . . . 
-    . . . . . f 5 5 5 f . . . . . . 
-    . . . . f 6 2 5 5 6 f . . . . . 
-    . . . f 6 6 6 6 1 6 6 f . . . . 
-    . . . f 6 6 6 6 6 1 6 f . . . . 
-    . . . f d f d 6 6 6 1 f . . . . 
-    . . . f d f d 6 6 6 6 f f . . . 
-    . . . f d 3 d d 6 6 6 f 6 f . . 
-    . . . . f d d d f f 6 f f . . . 
-    . . . . . f f 5 3 f 6 6 6 f . . 
-    . . . . f 5 3 3 f f f f f . . . 
-    . . . . f 3 3 f d f . . . . . . 
-    . . . . . f 3 f d f . . . . . . 
-    . . . . f 3 5 3 f d f . . . . . 
-    . . . . f f 3 3 f f . . . . . . 
-    . . . . . . f f f . . . . . . . 
     `]
-aPrincess[3].flipX()
 scene.setBackgroundColor(13)
 tiles.setTilemap(tilemap`level`)
 Annabelle = sprites.create(aPrincess[0], SpriteKind.Locked)
