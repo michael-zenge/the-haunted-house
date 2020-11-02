@@ -11,39 +11,54 @@ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
         }
     }
 })
+function getGirlFrontImg () {
+    return aGirl[0]
+}
+function getGirlBackImg () {
+    return aGirl[1]
+}
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
-    Annabelle.setImage(aPrincess[2])
+    Annabelle.setImage(getGirlLeftImg())
 })
 controller.right.onEvent(ControllerButtonEvent.Released, function () {
     Annabelle.image.flipX()
-    Annabelle.setImage(aPrincess[0])
+    if (Annabelle.tileKindAt(TileDirection.Center, myTiles.tile12)) {
+        Annabelle.setImage(getGirlBackImg())
+    } else {
+        Annabelle.setImage(getGirlFrontImg())
+    }
 })
 controller.left.onEvent(ControllerButtonEvent.Released, function () {
-    Annabelle.setImage(aPrincess[0])
+    if (Annabelle.tileKindAt(TileDirection.Center, myTiles.tile12)) {
+        Annabelle.setImage(getGirlBackImg())
+    } else {
+        Annabelle.setImage(getGirlFrontImg())
+    }
 })
+function getGirlLeftImg () {
+    return aGirl[2]
+}
 scene.onOverlapTile(SpriteKind.Locked, sprites.dungeon.chestOpen, function (sprite, location) {
     sprite.say("I found a key!", 500)
     sprite.setKind(SpriteKind.Unlocked)
 })
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
-    Annabelle.setImage(aPrincess[2])
+    Annabelle.setImage(getGirlLeftImg())
     Annabelle.image.flipX()
 })
 scene.onOverlapTile(SpriteKind.Unlocked, myTiles.tile10, function (sprite, location) {
     sprite.say("(A) unlock.", 500)
     if (controller.A.isPressed()) {
         tiles.setTileAt(location, myTiles.tile12)
+        Annabelle.setImage(getGirlBackImg())
     }
 })
 scene.onOverlapTile(SpriteKind.Locked, myTiles.tile10, function (sprite, location) {
     sprite.say("Locked!", 500)
 })
-scene.onOverlapTile(SpriteKind.Unlocked, myTiles.tile12, function (sprite, location) {
-    Annabelle.setImage(aPrincess[1])
-})
 let Annabelle: Sprite = null
-let aPrincess: Image[] = []
-aPrincess = [img`
+let aGirl: Image[] = []
+aGirl = [img`
     . . . . . . 5 . 5 . . . . . . . 
     . . . . . f 5 5 5 f f . . . . . 
     . . . . f 1 5 2 5 1 6 f . . . . 
@@ -97,7 +112,7 @@ aPrincess = [img`
     `]
 scene.setBackgroundColor(13)
 tiles.setTilemap(tilemap`level`)
-Annabelle = sprites.create(aPrincess[0], SpriteKind.Locked)
+Annabelle = sprites.create(getGirlFrontImg(), SpriteKind.Locked)
 tiles.placeOnTile(Annabelle, tiles.getTileLocation(9, 5))
 controller.moveSprite(Annabelle, 100, 0)
 scene.cameraFollowSprite(Annabelle)
