@@ -11,6 +11,7 @@ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
         }
     }
 })
+// Best practice: Use functions to avoid code duplicates.
 function getGirlFrontImg () {
     return aGirl[0]
 }
@@ -46,11 +47,15 @@ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     Annabelle.setImage(getGirlLeftImg())
     Annabelle.image.flipX()
 })
+controller.A.onEvent(ControllerButtonEvent.Released, function () {
+    if (Annabelle.tileKindAt(TileDirection.Center, myTiles.tile12)) {
+        Annabelle.setImage(getGirlBackImg())
+    }
+})
 scene.onOverlapTile(SpriteKind.Unlocked, myTiles.tile10, function (sprite, location) {
     sprite.say("(A) unlock.", 500)
     if (controller.A.isPressed()) {
         tiles.setTileAt(location, myTiles.tile12)
-        Annabelle.setImage(getGirlBackImg())
     }
 })
 scene.onOverlapTile(SpriteKind.Locked, myTiles.tile10, function (sprite, location) {
@@ -58,6 +63,7 @@ scene.onOverlapTile(SpriteKind.Locked, myTiles.tile10, function (sprite, locatio
 })
 let Annabelle: Sprite = null
 let aGirl: Image[] = []
+// Best practice: Manage all images at a central location.
 aGirl = [img`
     . . . . . . 5 . 5 . . . . . . . 
     . . . . . f 5 5 5 f f . . . . . 
