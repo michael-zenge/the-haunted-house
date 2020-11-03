@@ -1,16 +1,18 @@
 namespace SpriteKind {
     export const Locked = SpriteKind.create()
     export const Unlocked = SpriteKind.create()
+    export const Haunted = SpriteKind.create()
 }
 sprites.onCreated(SpriteKind.Enemy, function (sprite) {
-    if (levelCounter == 1) {
-        sprite.setFlag(SpriteFlag.DestroyOnWall, true)
-        sprite.setVelocity(randint(-80, 80), randint(-15, -30))
-        sprite.ay = 3
-        if (sprite.vx > 0) {
-            sprite.image.flipX()
-        }
+    GhostSpeed = randint(20, 40)
+    GhostAngle = randint(-140, 40) / 180 * 3.14159
+    sprite.setFlag(SpriteFlag.StayInScreen, false)
+    sprite.setFlag(SpriteFlag.BounceOnWall, true)
+    sprite.setVelocity(Math.cos(GhostAngle) * GhostSpeed, Math.sin(GhostAngle) * GhostSpeed)
+    if (sprite.vx > 0) {
+        sprite.image.flipX()
     }
+    sprite.ay = 5
 })
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     if (Annabelle.tileKindAt(TileDirection.Center, myTiles.tile12)) {
@@ -19,10 +21,10 @@ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
 })
 // Best practice: Use functions to avoid code duplicates.
 function getGirlFrontImg () {
-    return aGirl[0]
+    return aGirl[0].clone()
 }
 function getGirlBackImg () {
-    return aGirl[1]
+    return aGirl[1].clone()
 }
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     if (Annabelle.vy == 0) {
@@ -36,6 +38,29 @@ scene.onOverlapTile(SpriteKind.Locked, sprites.dungeon.chestClosed, function (sp
         tiles.setTileAt(location, sprites.dungeon.chestOpen)
     }
 })
+sprites.onOverlap(SpriteKind.Unlocked, SpriteKind.Enemy, function (sprite, otherSprite) {
+    setHaunted(sprite, otherSprite)
+})
+function setHaunted (sprite: Sprite, otherSprite: Sprite) {
+    CrazyGirl = sprites.create(getImgGirlHaunted(), SpriteKind.Haunted)
+    scene.cameraFollowSprite(CrazyGirl)
+    sprite.setFlag(SpriteFlag.Ghost, true)
+    sprite.setFlag(SpriteFlag.Invisible, true)
+    CrazyGirl.setPosition(sprite.x, sprite.y)
+    CrazyGirl.vx = otherSprite.vx
+    CrazyGirl.vy = sprite.ay
+    if (CrazyGirl.vx > 0) {
+        CrazyGirl.image.flipX()
+    }
+    CrazyGirl.say("Bla, bla, blah!")
+    otherSprite.destroy()
+    pause(1500)
+    sprite.setPosition(CrazyGirl.x, CrazyGirl.y)
+    CrazyGirl.destroy()
+    sprite.setFlag(SpriteFlag.Invisible, false)
+    sprite.setFlag(SpriteFlag.Ghost, false)
+    scene.cameraFollowSprite(sprite)
+}
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     Annabelle.setImage(getGirlLeftImg())
 })
@@ -307,7 +332,6 @@ function proceedNextLevel () {
     levelCounter += 1
 }
 controller.right.onEvent(ControllerButtonEvent.Released, function () {
-    Annabelle.image.flipX()
     if (Annabelle.tileKindAt(TileDirection.Center, myTiles.tile12)) {
         Annabelle.setImage(getGirlBackImg())
     } else {
@@ -322,15 +346,22 @@ controller.left.onEvent(ControllerButtonEvent.Released, function () {
     }
 })
 function getGirlLeftImg () {
-    return aGirl[2]
+    return aGirl[2].clone()
 }
 scene.onOverlapTile(SpriteKind.Locked, sprites.dungeon.chestOpen, function (sprite, location) {
     sprite.say("I found a key!", 1000)
     sprite.setKind(SpriteKind.Unlocked)
 })
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
-    Annabelle.setImage(getGirlLeftImg())
-    Annabelle.image.flipX()
+    Annabelle.setImage(getGirlRightImg())
+})
+function getGirlRightImg () {
+    tmpImg = aGirl[2].clone()
+    tmpImg.flipX()
+    return tmpImg
+}
+sprites.onOverlap(SpriteKind.Locked, SpriteKind.Enemy, function (sprite, otherSprite) {
+    setHaunted(sprite, otherSprite)
 })
 scene.onOverlapTile(SpriteKind.Unlocked, myTiles.tile10, function (sprite, location) {
     sprite.say("(B) to open.", 500)
@@ -344,20 +375,22 @@ controller.B.onEvent(ControllerButtonEvent.Released, function () {
         Annabelle.setImage(getGirlBackImg())
     }
 })
-sprites.onDestroyed(SpriteKind.Enemy, function (sprite) {
-    if (sprite.vx > 0) {
-        sprite.image.flipX()
-    }
-})
+function getImgGirlHaunted () {
+    return aGirl[3].clone()
+}
 scene.onOverlapTile(SpriteKind.Locked, myTiles.tile10, function (sprite, location) {
     sprite.say("Locked!", 500)
 })
 let Ghost: Sprite = null
+let tmpImg: Image = null
+let CrazyGirl: Sprite = null
+let GhostAngle = 0
+let GhostSpeed = 0
 let Annabelle: Sprite = null
 let aGirl: Image[] = []
 let levelCounter = 0
 levelCounter = 0
-// Best practice: Manage all images at a central location.
+// Best practice: Manage all images at a central location .
 aGirl = [img`
     . . . . . . 5 . 5 . . . . . . . 
     . . . . . f 5 5 5 f f . . . . . 
@@ -404,6 +437,23 @@ aGirl = [img`
     . . . . f d d d f f 6 f f . . . 
     . . . . . f f 5 3 f 6 6 6 f . . 
     . . . . f 5 3 3 f f f f f . . . 
+    . . . . f 3 3 f d f . . . . . . 
+    . . . . . f 3 f d f . . . . . . 
+    . . . . f 3 5 3 f d f . . . . . 
+    . . . . f f 3 3 f f . . . . . . 
+    . . . . . . f f f . . . . . . . 
+    `, img`
+    . . . . . . 5 . 5 . . . f . . . 
+    . . f f . f 5 5 5 f . f a f . . 
+    . f a a f a 2 5 5 a f a a f . . 
+    . . f f a a a a 1 a a f f . . . 
+    . . . f a a a a a 1 a f . . f . 
+    . . . f d f d a a a 1 a f f a f 
+    . . . f d f d a a a a a a a a f 
+    . . . f d 3 d d a a f a f a f . 
+    . . . . f d d d f f f a a f . . 
+    . . . . . f f 5 3 f . f a f . . 
+    . . . . f 5 3 3 f f . . f . . . 
     . . . . f 3 3 f d f . . . . . . 
     . . . . . f 3 f d f . . . . . . 
     . . . . f 3 5 3 f d f . . . . . 
@@ -469,8 +519,13 @@ Annabelle.vy = -80
 Annabelle.ay = 800
 proceedNextLevel()
 game.onUpdateInterval(3000, function () {
+    Ghost = sprites.create(aGhost[randint(0, aGhost.length - 1)].clone(), SpriteKind.Enemy)
     if (levelCounter == 1) {
-        Ghost = sprites.create(aGhost[randint(0, aGhost.length - 1)], SpriteKind.Enemy)
         tiles.placeOnRandomTile(Ghost, sprites.dungeon.doorClosedNorth)
+        Ghost.lifespan = 4500
+    } else {
+        tiles.placeOnRandomTile(Ghost, sprites.dungeon.floorDark3)
+        Ghost.lifespan = 2500
+        Ghost.follow(Annabelle, randint(30, 80))
     }
 })
