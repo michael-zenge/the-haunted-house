@@ -20,6 +20,15 @@ namespace myTiles {
 . . . . . . . . . . . . . . . . . . 
 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 
 `, [myTiles.transparency16,sprites.dungeon.floorDark0,sprites.dungeon.greenOuterSouth1,sprites.dungeon.greenInnerNorthWest,sprites.dungeon.floorDark1,sprites.dungeon.floorDark3,sprites.dungeon.floorDark4,sprites.dungeon.greenOuterSouth0,sprites.dungeon.greenInnerNorthEast,sprites.dungeon.greenInnerSouthWest,sprites.dungeon.greenInnerSouthEast,myTiles.tile10,myTiles.tile11,sprites.dungeon.chestClosed], TileScale.Sixteen)
+            case "level_0": return tiles.createTilemap(hex`18000700000000000000060000000000000000000000050000000005000005000000000000000605000000000000000000000000000000000000000000000000000000000002000200020000000000000000000000000000000000000002070207020000000000000000000000000000000000000002020202020000000004040000000300000400030004000002020802020004010101010101010101010101010101010101010101010101`, img`
+. . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . 2 . . . . 2 . . . . . . . . . . . 
+2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 
+`, [myTiles.transparency16,sprites.builtin.forestTiles8,sprites.dungeon.floorDark0,sprites.castle.saplingPine,sprites.castle.shrub,sprites.castle.rock0,sprites.castle.rock1,sprites.dungeon.doorClosedNorth,myTiles.tile10], TileScale.Sixteen)
         }
         return null;
     })

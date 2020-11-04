@@ -1,7 +1,7 @@
 namespace SpriteKind {
     export const Locked = SpriteKind.create()
     export const Unlocked = SpriteKind.create()
-    export const Haunted = SpriteKind.create()
+    export const Possessed = SpriteKind.create()
 }
 sprites.onCreated(SpriteKind.Enemy, function (sprite) {
     GhostSpeed = randint(20, 40)
@@ -26,28 +26,13 @@ function getGirlFrontImg () {
 function getGirlBackImg () {
     return aGirl[1].clone()
 }
-controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (Annabelle.vy == 0) {
-        Annabelle.vy = -200
-    }
-})
-scene.onOverlapTile(SpriteKind.Locked, sprites.dungeon.chestClosed, function (sprite, location) {
-    sprite.say("(B) to open.", 500)
-    if (controller.B.isPressed()) {
-        music.baDing.play()
-        tiles.setTileAt(location, sprites.dungeon.chestOpen)
-    }
-})
-sprites.onOverlap(SpriteKind.Unlocked, SpriteKind.Enemy, function (sprite, otherSprite) {
-    setHaunted(sprite, otherSprite)
-})
-function setHaunted (sprite: Sprite, otherSprite: Sprite) {
-    CrazyGirl = sprites.create(getImgGirlHaunted(), SpriteKind.Haunted)
+function setPossessed (sprite: Sprite, otherSprite: Sprite) {
+    CrazyGirl = sprites.create(getImgGirlHaunted(), SpriteKind.Possessed)
     scene.cameraFollowSprite(CrazyGirl)
     sprite.setFlag(SpriteFlag.Ghost, true)
     sprite.setFlag(SpriteFlag.Invisible, true)
     CrazyGirl.setPosition(sprite.x, sprite.y)
-    CrazyGirl.vx = otherSprite.vx
+    CrazyGirl.vx = -1 * otherSprite.vx
     CrazyGirl.vy = sprite.ay
     if (CrazyGirl.vx > 0) {
         CrazyGirl.image.flipX()
@@ -61,6 +46,21 @@ function setHaunted (sprite: Sprite, otherSprite: Sprite) {
     sprite.setFlag(SpriteFlag.Ghost, false)
     scene.cameraFollowSprite(sprite)
 }
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (Annabelle.vy == 0) {
+        Annabelle.vy = -200
+    }
+})
+scene.onOverlapTile(SpriteKind.Locked, sprites.dungeon.chestClosed, function (sprite, location) {
+    sprite.say("(B) to open.", 500)
+    if (controller.B.isPressed()) {
+        music.baDing.play()
+        tiles.setTileAt(location, sprites.dungeon.chestOpen)
+    }
+})
+sprites.onOverlap(SpriteKind.Unlocked, SpriteKind.Enemy, function (sprite, otherSprite) {
+    setPossessed(sprite, otherSprite)
+})
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     Annabelle.setImage(getGirlLeftImg())
 })
@@ -188,15 +188,7 @@ function proceedNextLevel () {
             ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
             ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
             `)
-        tiles.setTilemap(tiles.createTilemap(hex`18000700000000000000060000000000000000000000050000000005000005000000000000000605000000000000000000000000000000000000000000000000000000000002000200020000000000000000000000000000000000000002070207020000000000000000000000000000000000000002020202020000000004040000000300000400030004000002020802020004010101010101010101010101010101010101010101010101`, img`
-            . . . . . . . . . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . . . . . . . . . 
-            . . . . . . . 2 . . . . 2 . . . . . . . . . . . 
-            2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 
-            `, [myTiles.transparency16,sprites.builtin.forestTiles8,sprites.dungeon.floorDark0,sprites.castle.saplingPine,sprites.castle.shrub,sprites.castle.rock0,sprites.castle.rock1,sprites.dungeon.doorClosedNorth,myTiles.tile10], TileScale.Sixteen))
+        tiles.setTilemap(tilemap`level_0`)
     } else if (levelCounter == 1) {
         Annabelle.setKind(SpriteKind.Locked)
         scene.setBackgroundColor(13)
@@ -361,7 +353,7 @@ function getGirlRightImg () {
     return tmpImg
 }
 sprites.onOverlap(SpriteKind.Locked, SpriteKind.Enemy, function (sprite, otherSprite) {
-    setHaunted(sprite, otherSprite)
+    setPossessed(sprite, otherSprite)
 })
 scene.onOverlapTile(SpriteKind.Unlocked, myTiles.tile10, function (sprite, location) {
     sprite.say("(B) to open.", 500)
@@ -519,13 +511,16 @@ Annabelle.vy = -80
 Annabelle.ay = 800
 proceedNextLevel()
 game.onUpdateInterval(3000, function () {
-    Ghost = sprites.create(aGhost[randint(0, aGhost.length - 1)].clone(), SpriteKind.Enemy)
     if (levelCounter == 1) {
+        Ghost = sprites.create(aGhost[randint(0, aGhost.length - 1)].clone(), SpriteKind.Enemy)
         tiles.placeOnRandomTile(Ghost, sprites.dungeon.doorClosedNorth)
         Ghost.lifespan = 4500
     } else {
-        tiles.placeOnRandomTile(Ghost, sprites.dungeon.floorDark3)
-        Ghost.lifespan = 2500
-        Ghost.follow(Annabelle, randint(30, 80))
+        if (tiles.getTilesByType(sprites.dungeon.chestOpen).length > 0) {
+            Ghost = sprites.create(aGhost[randint(0, aGhost.length - 1)].clone(), SpriteKind.Enemy)
+            tiles.placeOnRandomTile(Ghost, sprites.dungeon.chestOpen)
+            Ghost.lifespan = 2500
+            Ghost.follow(Annabelle, randint(30, 80))
+        }
     }
 })
