@@ -15,8 +15,11 @@ sprites.onCreated(SpriteKind.Enemy, function (sprite) {
     sprite.ay = 5
 })
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (foundExit()) {
-        proceedNextLevel()
+    // Check whether sprite exists to avoid error
+    if (levelCounter > 0) {
+        if (foundExit()) {
+            proceedNextLevel()
+        }
     }
 })
 // Best practice: Use functions to avoid code duplicates.
@@ -27,8 +30,11 @@ function getGirlBackImg () {
     return aGirl[1].clone()
 }
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (Annabelle.vy == 0) {
-        Annabelle.vy = -200
+    // Check whether sprite exists to avoid error
+    if (levelCounter > 0) {
+        if (Annabelle.vy == 0) {
+            Annabelle.vy = -200
+        }
     }
 })
 scene.onOverlapTile(SpriteKind.Locked, sprites.dungeon.chestClosed, function (sprite, location) {
@@ -42,7 +48,10 @@ sprites.onOverlap(SpriteKind.Unlocked, SpriteKind.Enemy, function (sprite, other
     girlPossessedByGhost(sprite, otherSprite)
 })
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
-    Annabelle.setImage(getGirlLeftImg())
+    // Check whether sprite exists to avoid error
+    if (levelCounter > 0) {
+        Annabelle.setImage(getGirlLeftImg())
+    }
 })
 function proceedNextLevel () {
     if (levelCounter == 0) {
@@ -304,10 +313,16 @@ function proceedNextLevel () {
     levelCounter += 1
 }
 controller.right.onEvent(ControllerButtonEvent.Released, function () {
-    onLeftRightReleased()
+    // Check whether sprite exists to avoid error
+    if (levelCounter > 0) {
+        onLeftRightReleased()
+    }
 })
 controller.left.onEvent(ControllerButtonEvent.Released, function () {
-    onLeftRightReleased()
+    // Check whether sprite exists to avoid error
+    if (levelCounter > 0) {
+        onLeftRightReleased()
+    }
 })
 function getGirlLeftImg () {
     return aGirl[2].clone()
@@ -317,7 +332,10 @@ scene.onOverlapTile(SpriteKind.Locked, sprites.dungeon.chestOpen, function (spri
     sprite.setKind(SpriteKind.Unlocked)
 })
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
-    Annabelle.setImage(getGirlRightImg())
+    // Check whether sprite exists to avoid error
+    if (levelCounter > 0) {
+        Annabelle.setImage(getGirlRightImg())
+    }
 })
 function getGirlRightImg () {
     tmpImg = aGirl[2].clone()
@@ -335,8 +353,11 @@ scene.onOverlapTile(SpriteKind.Unlocked, myTiles.tile10, function (sprite, locat
     }
 })
 controller.B.onEvent(ControllerButtonEvent.Released, function () {
-    if (foundExit()) {
-        Annabelle.setImage(getGirlBackImg())
+    // Check whether sprite exists to avoid error
+    if (levelCounter > 0) {
+        if (foundExit()) {
+            Annabelle.setImage(getGirlBackImg())
+        }
     }
 })
 function girlPossessedByGhost (Girl: Sprite, Ghost: Sprite) {
