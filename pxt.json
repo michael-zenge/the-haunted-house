@@ -2,7 +2,8 @@
     "name": "The Haunted House",
     "description": "",
     "dependencies": {
-        "device": "*"
+        "device": "*",
+        "Ingenious Girl Splash Screen": "pub:02678-55758-58363-56763"
     },
     "files": [
         "main.blocks",
